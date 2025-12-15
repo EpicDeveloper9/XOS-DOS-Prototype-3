@@ -123,30 +123,55 @@ Available Commands
 
 
 CLS -Clears the screen
+
 VER - Shows OS version
+
 TIME - Shows current system time
+
 DATE - Shows current system date
+
 DIR / LS - Shows directory listing (simulated)
+
 HELP - Shows basic command list
+
 HELP /ADV - Shows detailed help for all commands
+
 EXIT - Halts the system
+
 RESTART - Restarts the OS (full startup sequence again)
+
 BEEP - Plays the startup tune
+
 PWD - Prints current directory (A:)
+
 MEM - Shows conventional memory size
+
 PRINT <text> - Prints the given text
+
 ECHO <text> - Same as PRINT
+
 TYPE <file> - Displays fake file content
+
 MKDIR <dir> - Creates a fake directory
+
 CD <dir> - Changes current fake directory
+
 DEL <file> - Deletes a fake file
+
 REN <old> <new> - Renames a fake file
+
 FORMAT - Formats the fake disk
+
 CHKDSK - Checks disk (simulated)
+
 TREE - Shows directory tree
+
 VOL - Shows volume label
+
 XPRG - Create a simple script program
+
 RUN - Run the last created program
+
 Scripting (XPRG)
 
 Type XPRG to enter program mode

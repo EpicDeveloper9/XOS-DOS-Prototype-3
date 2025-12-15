@@ -1,90 +1,186 @@
-XOS-DOS (P3) - Version 25.12.13
-===============================
-
-A simple 16-bit real-mode operating system written in x86 assembly (NASM).
-Boots from a floppy image and provides a DOS-like command-line interface.
-
+XOS-DOS Readme
+Overview
+XOS-DOS is a custom, lightweight, 16-bit operating system written in NASM assembly, designed to run on real hardware or emulators. It features a command-line shell with many classic DOS-inspired commands, a simple scripting language (via XPRG and RUN), a colorful startup screen, and a PC speaker startup tune.
+Version: 25.12.15 (December 15, 2025)
+It boots from a floppy disk image (xos.img) and provides a fun, retro DOS-like experience.
 Features
---------
-- Classic command prompt
-- Startup splash screen
-- Built-in commands: cls, ver, time, date, dir, help, print, exit, restart
-- Text file system (.xtxt files)
-  - Create and edit with `newtext filename.xtxt` (end with a single '.' on its own line)
-  - View with `vwf filename.xtxt`
-  - List with `dir`
-- Simple scripting
-  - Create scripts with `xprg` (end with 'end_prg.')
-  - Run with `run`
-  - Supports print, variables (%VAR%), set /VAR="value", and goto
 
+Beautiful blue startup screen with logo and version
+PC speaker startup melody (C-E-G-C)
+Full command shell with > prompt
+Case-insensitive commands
+Built-in scripting (XPRG to create, RUN to execute)
+Over 20 commands (see list below)
+
+Available Commands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CommandDescriptionCLSClears the screenVERShows OS versionTIMEShows current system timeDATEShows current system dateDIR / LSShows directory listing (simulated)HELPShows basic command listHELP /ADVShows detailed help for all commandsEXITHalts the systemRESTARTRestarts the OS (full startup sequence again)BEEPPlays the startup tunePWDPrints current directory (A:)MEMShows conventional memory sizePRINT <text>Prints the given textECHO <text>Same as PRINTTYPE <file>Displays fake file contentMKDIR <dir>Creates a fake directoryCD <dir>Changes current fake directoryDEL <file>Deletes a fake fileREN <old> <new>Renames a fake fileFORMATFormats the fake diskCHKDSKChecks disk (simulated)TREEShows directory treeVOLShows volume labelXPRGCreate a simple script programRUNRun the last created program
+Scripting (XPRG)
+
+Type XPRG to enter program mode
+Enter lines one by one
+Type a single . on a line to finish and save
+Supported script commands:
+set /VAR="value" – sets a variable
+print "text" or print %VAR% – prints text or variable
+goto N – jumps to line N (0-based)
+Labels with :label (ignored for now)
+
+
+Example:
+textXPRG
+> set /W_MSG="Hello World!"
+> print %W_MSG%
+> .
+RUN
+Building and Running
 Requirements
-------------
-- NASM assembler
-- MSYS2 or Linux environment
-- QEMU for testing
 
-Build Instructions
-------------------
-1. Open MSYS2 terminal in the folder.
-2. Run:
-   	nasm -f bin boot.asm -o boot.bin
-   	nasm -f bin kernel.asm -o kernel.bin
-3. Create the floppy image (example using dd on Linux/MSYS2):
-   	dd if=/dev/zero of=xos.img bs=512 count=2880
-   	dd if=boot.bin of=xos.img conv=notrunc
-   	dd if=kernel.bin of=xos.img bs=512 seek=1 conv=notrunc
+NASM assembler
+QEMU or Bochs (for testing)
+DOSBox (best for hearing the beep tune)
+dd, mkfs.vfat (Linux/Mac)
 
+Build Steps
+Bash# Assemble
+nasm -f bin boot.asm -o boot.bin
+nasm -f bin kernel.asm -o kernel.bin
+
+# Create 1.44MB floppy image
+dd if=/dev/zero of=xos.img bs=1024 count=1440
+mkfs.vfat -F 12 xos.img
+
+# Mount and copy files
+mkdir mnt
+sudo mount -o loop xos.img mnt
+sudo cp boot.bin mnt/BOOT.SYS
+sudo cp kernel.bin mnt/KERNEL.SYS
+sudo umount mnt
+rmdir mnt
+
+# Write bootloader to MBR
+dd if=boot.bin of=xos.img bs=512 count=1 conv=notrunc
 Run
----
-qemu-system-i386 -fda xos.img
 
-Commands
---------
-cls            - Clear screen
-ver            - Show version
-time           - Show current time
-date           - Show current date
-dir            - List files
-help           - Show this command list
-print <text>   - Print text
-exit           - Halt the OS
-restart        - Restart the OS
-newtext file.xtxt - Create/edit text file
-vwf file.xtxt  - View text file
-xprg           - Create a script (CURRENTLY BEING TESTED SO IT DOESN'T WORK)
-run            - Run the last script
+QEMU (with sound for beep):Bashqemu-system-i386 -fda xos.img -soundhw pcspk
+DOSBox (excellent sound):
+Mount the directory and boot the image.
+Bochs or real hardware via USB/floppy.
 
-Scripting (xprg)
----------------
-- print <text>         : Print text
-- print %VAR%          : Print variable value
-- set /VAR="value"     : Set variable
-- goto N               : Jump to line N
-- Lines starting with : are labels
+Troubleshooting
 
-License
--------
-MIT License
+No startup screen or beep: Use DOSBox or QEMU with -soundhw pcspk.
+"Bad command" on first prompt: Fixed in current version — empty lines are now ignored.
+Scripts not running: Make sure to end with a single . on its own line.
 
-Copyright (c) 2025 EpicDeveloper
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-
-Enjoy XOS-DOS!
+Credits
+Created with love by a retro computing enthusiast.
+Inspired by classic MS-DOS and FreeDOS
